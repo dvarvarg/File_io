@@ -20,7 +20,7 @@ def save_history(file_save, link,file): # куда и что сохраняем
                     'save_file_history':os.path.basename(file_save), # куда мы сохраняем
                     'link': link}) # сгенерированная ссылка
     with open(file_save, 'w') as f:
-        json.dump(history, f, indent=4) # загрузить данные (какие, куда, с каким отступом)
+        json.dump(history,f,indent=4) # загрузить данные (какие, куда, с каким отступом)
 
 
 def get_response():
@@ -30,7 +30,7 @@ def get_response():
             with open (file,'rb') as fi:  # rb-чтение файла побитно
                 f={'file':fi}
                 answer_json=requests.post('https://file.io',files=f)
-                print(answer_json.json())
+                #print(answer_json.json())
                 if answer_json.status_code == 200:
                     link=answer_json.json()['link']
                     e.delete(0,END)
@@ -43,6 +43,28 @@ def get_response():
         mb.showerror('Ошибка',f'Произошла ошибка: {e}')
 
 
+def show_history():
+    if not os.path.exists(file_save):
+        mb.showinfo('Информация','История пуста')
+        return
+    window_history=Toplevel()
+    window_history.title('История')
+
+    name_listbox=Listbox(window_history,width=50)
+    name_listbox.pack(side=LEFT)
+
+    link_listbox=Listbox(window_history,width=50)
+    link_listbox.pack(side=LEFT)
+
+    with open(file_save,'r') as file:
+        content=json.load(file)
+        for i in content:
+            name_listbox.insert(END,i['name_file'])
+            link_listbox.insert(END, i['link'])
+
+
+
+
 window=Tk()
 window.title('Отправка файлов в file.io')
 window.geometry(f'400x300+{window.winfo_screenwidth()//2-200}+{window.winfo_screenheight()//2-150}')
@@ -52,5 +74,8 @@ btn.pack(pady=10)
 
 e=Entry(window,width=30, font=('Arial',16))
 e.pack(pady=10)
+
+btn_history=Button(window,text='Посмотреть историю',font=('Arial',16), command=show_history)
+btn_history.pack()
 
 window.mainloop()
