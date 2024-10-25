@@ -23,4 +23,7 @@ def test_save_history():
         content=json.load(test_file)
         assert len(content)==1
 
+    os.remove('test_file.json')
+
+
 test_save_history()
