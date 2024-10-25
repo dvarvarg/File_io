@@ -45,7 +45,7 @@ def show_history():
         return # пользователя уведомили и из функции вылетаем
 
     history_window=Toplevel(window)
-    history_window.title(text='История загрузок')
+    history_window.title('История загрузок')
 
     files_listbox=Listbox(history_window,width=50, height=20)
     files_listbox.grid(row=0,column=0,padx=(10,0),pady=10)
@@ -56,8 +56,8 @@ def show_history():
     with open(history_file,'r') as f:
         history=json.load(f)
         for item in history:
-            files_listbox.insert(END,['filepath'])
-            links_listbox.insert(END,['download_link'])
+            files_listbox.insert(END,item['filepath'])
+            links_listbox.insert(END,item['download_link'])
 
 
 
