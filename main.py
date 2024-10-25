@@ -1,7 +1,7 @@
 from tkinter import *
 import requests
 from tkinter import filedialog as fd
-#from tkinter import ttk
+from tkinter import ttk
 from tkinter import messagebox as mb
 import pyperclip
 import os
@@ -11,7 +11,7 @@ import json
 file_save='history_link.json'
 
 
-def save_history(file_save, link,file): # куда и что сохраняем
+def save_history(file_save, link,file): # где сохраняем, что сохраняем, имя файла, который получаем
     history=[] #создали пустой список
     if os.path.exists(file_save):  # если файл существует
         with open(file_save,'r') as f: # и дополняем его новым
@@ -20,27 +20,26 @@ def save_history(file_save, link,file): # куда и что сохраняем
                     'save_file_history':os.path.basename(file_save), # куда мы сохраняем
                     'link': link}) # сгенерированная ссылка
     with open(file_save, 'w') as f:
-        json.dump(history,f,indent=4) # загрузить данные (какие, куда, с каким отступом)
+        json.dump(history, f,indent=4) # загрузить данные (какие, куда, с каким отступом)
 
 
 def get_response():
     try:
-        file=fd.askopenfilename()
+        file = fd.askopenfilename()
         if file:
-            with open (file,'rb') as fi:  # rb-чтение файла побитно
-                f={'file':fi}
-                answer_json=requests.post('https://file.io',files=f)
-                #print(answer_json.json())
+            with open(file, 'rb') as fi:  # rb-чтение файла побитно
+                f = {'file': fi}
+                answer_json = requests.post("https://file.io", files=f)
                 if answer_json.status_code == 200:
-                    link=answer_json.json()['link']
+                    link = answer_json.json()['link']
                     e.delete(0,END)
                     e.insert(0,link)
                     pyperclip.copy(link) #сохранение в буфер обмена, как только получили ссылку, то она у нас уже скопирована и ее можно уже вставлять
                     save_history(file_save, link,file)
                 else:
-                     mb.showerror('Ошибка', 'Неверно указанный путь к сайту')
-    except Exception as e:
-        mb.showerror('Ошибка',f'Произошла ошибка: {e}')
+                    mb.showerror('Ошибка', 'Не верно указанный путь к сайту')
+    except Exception as exc:
+        mb.showerror('Ошибка', f'Произошла ошибка: {exc}')
 
 
 def show_history():
@@ -63,10 +62,8 @@ def show_history():
             link_listbox.insert(END, i['link'])
 
 
-
-
 window=Tk()
-window.title('Отправка файлов в file.io')
+window.title('Сохранение файлов в облаке file.io')
 window.geometry(f'400x300+{window.winfo_screenwidth()//2-200}+{window.winfo_screenheight()//2-150}')
 
 btn=Button(window, text='Выбрать файл',font=('Arial',16), command=get_response)
